@@ -1,0 +1,36 @@
+>From 2f4db115586bd3d98c1f05eb64c125495bf0331a Mon Sep 17 00:00:00 2001
+From: Wolfgang Silbermayr <wolfgang@silbermayr.at>
+Date: Fri, 27 May 2022 09:19:02 +0200
+Subject: [PATCH] Fix cppcheck 2.8 uninitialized variables warnings
+Forwarded: https://github.com/vasi/pixz/pull/104
+Author: Wolfgang Silbermayr <wolfgang@silbermayr.at>
+
+---
+ src/write.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/write.c b/src/write.c
+index c84ec55..7ecfb19 100644
+--- a/src/write.c
++++ b/src/write.c
+@@ -448,7 +448,7 @@ static void write_block(pipeline_item_t *pi) {
+ static void encode_index(void) {
+     if (lzma_index_encoder(&gStream, gIndex) != LZMA_OK)
+         die("Error creating index encoder");
+-    uint8_t obuf[CHUNKSIZE];
++    uint8_t obuf[CHUNKSIZE] = {};
+     lzma_ret err = LZMA_OK;
+     while (err != LZMA_STREAM_END) {
+         gStream.next_out = obuf;
+@@ -513,7 +513,7 @@ static void write_file_index_bytes(size_t size, uint8_t *buf) {
+ }
+ 
+ static void write_file_index_buf(lzma_action action) {
+-    uint8_t obuf[CHUNKSIZE];
++    uint8_t obuf[CHUNKSIZE] = {};
+     gStream.avail_in = gFileIndexBufPos;
+     gStream.next_in = gFileIndexBuf;
+     lzma_ret err = LZMA_OK;
+-- 
+2.35.1
+
